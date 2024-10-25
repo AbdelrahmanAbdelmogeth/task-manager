@@ -1,0 +1,130 @@
+// TaskForm.js
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import axios from 'axios'; // Import axios
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Schema for validation
+const schema = yup.object().shape({
+  title: yup.string().required('Title is required'),
+  description: yup.string().required('Description is required'),
+  priority: yup.string().oneOf(['Low', 'Medium', 'High'], 'Invalid priority'),
+  state: yup.string().oneOf(['todo', 'doing', 'done'], 'Invalid state'),
+  image: yup
+    .mixed()
+    .test('fileSize', 'Image size should be less than 5MB', (value) => {
+      return !value || (value && value[0] && value[0].size <= 5242880); // 5MB limit
+    })
+    .test('fileFormat', 'Unsupported format, upload JPEG or PNG', (value) => {
+      return !value || (value && value[0] && ['image/jpeg', 'image/png'].includes(value[0].type));
+    }),
+});
+
+const TaskForm = ({ onSubmit }) => {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file[0]);
+
+    try {
+      const response = await axios.post('https://api.imgur.com/3/image/', formData, {
+        headers: {
+          Authorization: 'Client-ID a53e9ebce65ee6a',
+        },
+      });
+      console.log('Upload successful:', response.data);
+      return response.data.data.link;
+    } catch (error) {
+      console.error('Image upload failed:', error.response ? error.response.data : error.message);
+      throw new Error('Image upload failed');
+    }
+  };
+
+  const handleFormSubmit = async (data) => {
+    let imageUrl = null;
+    if (data.image.length > 0) {
+      imageUrl = await uploadImage(data.image);
+    }
+    onSubmit({ ...data, image: imageUrl }); // Include the image URL in the form data
+  };
+
+  return (
+    <div className="floating-form position-fixed bg-light shadow p-4 rounded" 
+         style={{ bottom: '20px', right: '20px', width: '300px', zIndex: 1000 }}>
+      <h5 className="mb-3">Add New Task</h5>
+      <form onSubmit={handleSubmit(handleFormSubmit)}>
+        <div className="form-group mb-3">
+          <label htmlFor="title" className="form-label">Title</label>
+          <input 
+            type="text" 
+            id="title" 
+            {...register('title')} 
+            className={`form-control ${errors.title ? 'is-invalid' : ''}`} 
+          />
+          {errors.title && <div className="invalid-feedback">{errors.title.message}</div>}
+        </div>
+        
+        <div className="form-group mb-3">
+          <label htmlFor="description" className="form-label">Description</label>
+          <textarea 
+            id="description" 
+            {...register('description')} 
+            className={`form-control ${errors.description ? 'is-invalid' : ''}`} 
+          />
+          {errors.description && <div className="invalid-feedback">{errors.description.message}</div>}
+        </div>
+        
+        <div className="form-group mb-3">
+          <label htmlFor="priority" className="form-label">Priority</label>
+          <select 
+            id="priority" 
+            {...register('priority')} 
+            className={`form-select ${errors.priority ? 'is-invalid' : ''}`} 
+          >
+            <option value="">Select Priority</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+          {errors.priority && <div className="invalid-feedback">{errors.priority.message}</div>}
+        </div>
+        
+        <div className="form-group mb-3">
+          <label htmlFor="state" className="form-label">State</label>
+          <select 
+            id="state" 
+            {...register('state')} 
+            className={`form-select ${errors.state ? 'is-invalid' : ''}`} 
+          >
+            <option value="">Select State</option>
+            <option value="todo">To Do</option>
+            <option value="doing">Doing</option>
+            <option value="done">Done</option>
+          </select>
+          {errors.state && <div className="invalid-feedback">{errors.state.message}</div>}
+        </div>
+
+        <div className="form-group mb-3">
+          <label htmlFor="image" className="form-label">Image (optional)</label>
+          <input 
+            type="file" 
+            id="image" 
+            {...register('image')} 
+            className={`form-control ${errors.image ? 'is-invalid' : ''}`} 
+            accept="image/jpeg, image/png"
+          />
+          {errors.image && <div className="invalid-feedback">{errors.image.message}</div>}
+        </div>
+        
+        <button type="submit" className="btn btn-primary w-100">Submit</button>
+      </form>
+    </div>
+  );
+};
+
+export default TaskForm;
