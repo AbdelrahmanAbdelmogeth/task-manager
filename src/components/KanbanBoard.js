@@ -48,19 +48,11 @@ const KanbanBoard = () => {
                             >
                               <div className={`card-body ${getPriorityColor(task.priority)}`}>
                                 {task.image && (
-<<<<<<< HEAD
                                   <img
                                     src={task.image}
                                     alt={`${task.title} preview`}
                                     style={{ width: '100px', height: '100px', objectFit: 'cover', marginBottom: '10px' }}
                                   />
-=======
-                                <img
-                                  src={task.image}
-                                  alt={`${task.title} preview`}
-                                  style={{ width: '100px', height: '100px', objectFit: 'cover', marginBottom: '10px' }}
-                                />
->>>>>>> feature/AddTaks
                                 )}
                                 <h5 className="card-title">{task.title}</h5>
                                 <p className="card-text">{task.description}</p>
