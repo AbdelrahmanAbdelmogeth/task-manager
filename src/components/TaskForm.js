@@ -14,6 +14,7 @@ const schema = yup.object().shape({
   state: yup.string().oneOf(['todo', 'doing', 'done'], 'Invalid state'),
   image: yup
     .mixed()
+<<<<<<< HEAD
     .test('fileSize', 'Image size should be less than 5MB', (value) => {
       return !value || (value && value[0] && value[0].size <= 5242880); // 5MB limit
     })
@@ -22,6 +23,20 @@ const schema = yup.object().shape({
     }),
 });
 
+=======
+    .notRequired()
+    .test('fileSize', 'Image size should be less than 5MB', (value) => {
+      if (!value || value.length === 0) return true; // No file selected, pass the test
+      return value[0].size <= 5242880;
+    })
+    .test('fileFormat', 'Unsupported format, upload JPEG or PNG', (value) => {
+      if (!value || value.length === 0) return true; // No file selected, pass the test
+      return ['image/jpeg', 'image/png'].includes(value[0].type);
+    }),
+});
+
+
+>>>>>>> feature/AddTaks
 const TaskForm = ({ onSubmit }) => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -47,10 +62,17 @@ const TaskForm = ({ onSubmit }) => {
 
   const handleFormSubmit = async (data) => {
     let imageUrl = null;
+<<<<<<< HEAD
     if (data.image.length > 0) {
       imageUrl = await uploadImage(data.image);
     }
     onSubmit({ ...data, image: imageUrl }); // Include the image URL in the form data
+=======
+    if (data.image && data.image.length > 0) {
+      imageUrl = await uploadImage(data.image);
+    }
+    onSubmit({ ...data, image: imageUrl || null }); // Only include the image URL if uploaded
+>>>>>>> feature/AddTaks
   };
 
   return (
@@ -86,7 +108,10 @@ const TaskForm = ({ onSubmit }) => {
             {...register('priority')} 
             className={`form-select ${errors.priority ? 'is-invalid' : ''}`} 
           >
+<<<<<<< HEAD
             <option value="">Select Priority</option>
+=======
+>>>>>>> feature/AddTaks
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
@@ -101,7 +126,10 @@ const TaskForm = ({ onSubmit }) => {
             {...register('state')} 
             className={`form-select ${errors.state ? 'is-invalid' : ''}`} 
           >
+<<<<<<< HEAD
             <option value="">Select State</option>
+=======
+>>>>>>> feature/AddTaks
             <option value="todo">To Do</option>
             <option value="doing">Doing</option>
             <option value="done">Done</option>
