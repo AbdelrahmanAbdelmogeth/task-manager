@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -24,10 +24,20 @@ const schema = yup.object().shape({
     }),
 });
 
-const TaskForm = ({ onSubmit, onAddTaskToggle }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+const TaskForm = ({ onSubmit, onAddTaskToggle, defaultValues, isEditMode }) => {
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: yupResolver(schema),
+    defaultValues,
   });
+
+  // Populate form fields with default values when they change
+  useEffect(() => {
+    if (defaultValues) {
+      Object.keys(defaultValues).forEach(key => {
+        setValue(key, defaultValues[key]);
+      });
+    }
+  }, [defaultValues, setValue]);
 
   const uploadImage = async (file) => {
     const formData = new FormData();
@@ -51,16 +61,17 @@ const TaskForm = ({ onSubmit, onAddTaskToggle }) => {
     if (data.image && data.image.length > 0) {
       imageUrl = await uploadImage(data.image);
     }
-    onSubmit({ ...data, image: imageUrl || null });
+    // Ensure defaultValues and defaultValues.image are defined before accessing
+    onSubmit({ ...data, image: imageUrl || (defaultValues && defaultValues.image) || null });
+    //onAddTaskToggle(); // Close form after submission
   };
 
   return (
     <div className="floating-form position-fixed bg-light shadow p-4 rounded"
-         style={{ bottom: '50%', right: '50%', width: '40%', zIndex: 1000, transform: 'translate(50%, 50%)'
-          }}>
-            {/* Close Icon */}
-     <button type="button" className="btn-close float-end" onClick={onAddTaskToggle} aria-label="Close"></button>
-     <h5 className="mb-3">Add New Task</h5>
+         style={{ bottom: '50%', right: '50%', width: '40%', zIndex: 1000, transform: 'translate(50%, 50%)' }}>
+      {/* Close Icon */}
+      <button type="button" className="btn-close float-end" onClick={onAddTaskToggle} aria-label="Close"></button>
+      <h5 className="mb-3">{isEditMode ? "Edit Task" : "Add New Task"}</h5>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div className="form-group mb-3">
           <label htmlFor="title" className="form-label">Title</label>

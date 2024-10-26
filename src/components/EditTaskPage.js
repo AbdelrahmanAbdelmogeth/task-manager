@@ -1,23 +1,20 @@
-// src/components/EditTaskPage.js
+// EditTaskPage.js
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { editTask } from '../features/tasks/taskSlice';
+import { useDispatch } from 'react-redux';
+import { updateTask } from '../features/tasks/taskSlice';
 import TaskForm from './TaskForm';
-import { useParams } from 'react-router-dom';
 
-const EditTaskPage = () => {
-  const { id } = useParams();
+const EditTaskPage = ({ task, onClose, onAddTaskToggle }) => {
   const dispatch = useDispatch();
-  const task = useSelector(state => state.tasks.find(task => task.id === id));
 
   const onSubmit = (data) => {
-    dispatch(editTask({ id, updates: data }));
+    dispatch(updateTask({ ...task, ...data })); // Merge task data with updates
+    onClose(); // Close form after submission
   };
 
   return (
     <div>
-      <h2>Edit Task</h2>
-      {task ? <TaskForm onSubmit={onSubmit} defaultValues={task} /> : <p>Task not found</p>}
+      {task ? <TaskForm onSubmit={onSubmit} defaultValues={task} onAddTaskToggle={onAddTaskToggle} isEditMode={true}/> : <p>Task not found</p>}
     </div>
   );
 };

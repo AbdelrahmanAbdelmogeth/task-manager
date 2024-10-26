@@ -3,6 +3,11 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = [];
 
+export const reorderTasks = (tasks) => ({
+  type: 'tasks/reorder',
+  payload: tasks,
+});
+
 const taskSlice = createSlice({
   name: 'tasks',
   initialState,
@@ -32,9 +37,13 @@ const taskSlice = createSlice({
       if (index !== -1) {
         state[index] = action.payload; // Update the existing task
       }
-    }
+    },
+     // existing reducers...
+     reorder: (state, action) => {
+      return action.payload; // Directly replace the state with the new order
+    },
   },
 });
 
-export const { addTask, editTask, deleteTask, changeTaskState, updateTask } = taskSlice.actions;
+export const { addTask, deleteTask, changeTaskState, updateTask, reorder } = taskSlice.actions;
 export default taskSlice.reducer;
