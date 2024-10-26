@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom'; // Remove Route and Routes imports
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import AddTaskPage from './components/AddTaskPage';
@@ -8,31 +8,47 @@ import KanbanBoard from './components/KanbanBoard';
 import Sidebar from './components/Sidebar';
 
 function App() {
-  const [showAddTask, setShowAddTask] = useState(false);
-  const [showEditTask, setShowEditTask] = useState(false);
+  const [isAddTaskVisible, setIsAddTaskVisible] = useState(false);
+  const [isEditTaskVisible, setIsEditTaskVisible] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
 
   const handleEditTask = (task) => {
     setTaskToEdit(task);
-    setShowEditTask(true);
+    setIsEditTaskVisible(true);
   };
 
-  const handleAddTaskToggle = () => {
-    setShowAddTask((prev) => !prev);
+  const toggleAddTaskVisibility = () => {
+    setIsAddTaskVisible((prev) => !prev);
+  };
+
+  const closeAddTaskForm = () => {
+    setIsAddTaskVisible(false);
+  };
+
+  const closeEditTaskForm = () => {
+    setIsEditTaskVisible(false);
   };
 
   return (
     <Provider store={store}>
       <Router>
         <div className="d-flex" id="wrapper">
-          <Sidebar onAddTaskToggle={handleAddTaskToggle} />
+          <Sidebar onAddTaskToggle={toggleAddTaskVisibility} />
           <div className="App" style={{ flexGrow: 1 }}>
             <KanbanBoard onEditTask={handleEditTask} />
-            {showAddTask && (
-              <AddTaskPage onAddTaskToggle={handleAddTaskToggle} onAdd={() => setShowAddTask(false)} />
+            {isAddTaskVisible && (
+              <AddTaskPage 
+                onAddTaskToggle={closeAddTaskForm} 
+                onAdd={() => setIsAddTaskVisible(false)} 
+              />
             )}
-            {showEditTask && <EditTaskPage task={taskToEdit} onClose={() => setShowEditTask(false)} onAddTaskToggle={handleAddTaskToggle}/>}
-            
+            {isEditTaskVisible && (
+              <EditTaskPage 
+                task={taskToEdit} 
+                onClose={closeEditTaskForm} 
+                onAddTaskToggle={toggleAddTaskVisibility} 
+              />
+            )}
           </div>
         </div>
       </Router>

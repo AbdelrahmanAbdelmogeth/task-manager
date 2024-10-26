@@ -1,4 +1,3 @@
-// EditTaskPage.js
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { updateTask } from '../features/tasks/taskSlice';
@@ -14,7 +13,16 @@ const EditTaskPage = ({ task, onClose, onAddTaskToggle }) => {
 
   return (
     <div>
-      {task ? <TaskForm onSubmit={onSubmit} defaultValues={task} onAddTaskToggle={onAddTaskToggle} isEditMode={true}/> : <p>Task not found</p>}
+      {task ? (
+        <TaskForm
+          onSubmit={onSubmit}
+          defaultValues={task}
+          onAddTaskToggle={onClose}
+          isEditMode={true}
+        />
+      ) : (
+        <p>Task not found</p>
+      )}
     </div>
   );
 };

@@ -3,18 +3,14 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = [];
 
-export const reorderTasks = (tasks) => ({
-  type: 'tasks/reorder',
-  payload: tasks,
-});
-
 const taskSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
     addTask: (state, action) => {
-      state.push(action.payload);
-    },
+      const newTask = { ...action.payload, index: state.length }; // Set index based on current length
+      state.push(newTask);
+    },  
     editTask: (state, action) => {
       const { id, updates } = action.payload;
       const index = state.findIndex(task => task.id === id);
@@ -39,11 +35,11 @@ const taskSlice = createSlice({
       }
     },
      // existing reducers...
-     reorder: (state, action) => {
-      return action.payload; // Directly replace the state with the new order
+     reorderTasks: (state, action) => {
+      return action.payload.sort((a, b) => a.index - b.index); // Sort tasks by index
     },
   },
 });
 
-export const { addTask, deleteTask, changeTaskState, updateTask, reorder } = taskSlice.actions;
+export const { addTask, deleteTask, changeTaskState, updateTask, reorderTasks } = taskSlice.actions;
 export default taskSlice.reducer;

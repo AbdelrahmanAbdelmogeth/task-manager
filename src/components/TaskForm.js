@@ -27,18 +27,25 @@ const schema = yup.object().shape({
 const TaskForm = ({ onSubmit, onAddTaskToggle, defaultValues, isEditMode }) => {
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: yupResolver(schema),
-    defaultValues,
+    defaultValues: {
+      title: '',
+      description: '',
+      priority: 'Low',
+      state: 'todo', // Default to 'todo' but can be overridden by defaultValues
+      image: null,
+      ...defaultValues // Spread defaultValues to override only specific fields
+    },
   });
 
-  // Populate form fields with default values when they change
-  useEffect(() => {
+   // Populate form fields with default values when they change
+   useEffect(() => {
     if (defaultValues) {
       Object.keys(defaultValues).forEach(key => {
         setValue(key, defaultValues[key]);
       });
     }
   }, [defaultValues, setValue]);
-
+  
   const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append('image', file[0]);

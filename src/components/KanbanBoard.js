@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'react-redux';
-import { changeTaskState, deleteTask } from '../features/tasks/taskSlice';
-import {reorderTasks} from '../features/tasks/taskSlice'
+import { changeTaskState, deleteTask, reorderTasks } from '../features/tasks/taskSlice';
+
 
 const KanbanBoard = ({ onEditTask }) => {
   const dispatch = useDispatch();
@@ -14,27 +14,38 @@ const KanbanBoard = ({ onEditTask }) => {
 
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
-  
+
     // Dropped outside the list
     if (!destination) return;
-  
+
     // Dropped in the same position
     if (destination.droppableId === source.droppableId && destination.index === source.index) return;
-  
+
+    const updatedTasks = Array.from(tasks);
+
     // Reordering tasks within the same state
     if (destination.droppableId === source.droppableId) {
-      const updatedTasks = Array.from(tasks);
-      const [movedTask] = updatedTasks.splice(source.index, 1);
-      updatedTasks.splice(destination.index, 0, movedTask);
-      
-      // Dispatch an action to update the state with reordered tasks
-      dispatch(reorderTasks(updatedTasks)); // Implement this action in your Redux slice
-      return;
+        const sourceTasks = updatedTasks.filter(task => task.state === source.droppableId);
+        const [movedTask] = sourceTasks.splice(source.index, 1);
+        sourceTasks.splice(destination.index, 0, movedTask);
+
+        // Update task states and indices
+        const newTasks = updatedTasks.map(task => {
+            if (task.state === source.droppableId) {
+                const newIndex = sourceTasks.indexOf(task);
+                return { ...task, index: newIndex }; // Assign new index based on order
+            }
+            return task; // Return original task if not modified
+        });
+
+        dispatch(reorderTasks(newTasks)); // Update the tasks in the Redux store
+        return;
     }
-  
+
     // Moving to a different state
     dispatch(changeTaskState({ id: draggableId, newState: destination.droppableId }));
-  };
+};
+
 
   const handleDeleteTask = (taskId) => {
     dispatch(deleteTask(taskId));
