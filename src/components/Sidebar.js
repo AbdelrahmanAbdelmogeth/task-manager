@@ -4,12 +4,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Sidebar = ({ onAddTaskToggle }) => {
   return (
-    <nav className="col-md-2 d-none d-md-block bg-dark sidebar" style={{ height: '100vh' }}>
+    <nav className="col-md-2 d-none d-md-block bg-dark sidebar" style={{ height: '100vh', width: '20%' }}>
       <div className="sidebar-sticky">
         <ul className="nav flex-column">
           <li className="nav-item">
             <Link to="/kanban" className="nav-link text-white">
-              <h5 className="mb-0">Task Manager</h5>
+              <h3 className="mb-0">Task Manager</h3>
             </Link>
           </li>
           <li className="nav-item">

@@ -33,7 +33,7 @@ function App() {
     <Provider store={store}>
       <Router>
         <div className="d-flex" id="wrapper">
-          <Sidebar onAddTaskToggle={toggleAddTaskVisibility} />
+          <Sidebar onAddTaskToggle={toggleAddTaskVisibility} isAddTaskVisible/>
           <div className="App" style={{ flexGrow: 1 }}>
             <KanbanBoard onEditTask={handleEditTask} />
             {isAddTaskVisible && (
