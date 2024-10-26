@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addTask } from '../features/tasks/taskSlice';
 import TaskForm from './TaskForm';
 
-const AddTaskPage = () => {
+const AddTaskPage = ({onAddTaskToggle}) => {
   const dispatch = useDispatch();
 
   const onSubmit = (data) => {
@@ -12,7 +12,7 @@ const AddTaskPage = () => {
 
   return (
     <div>
-      <TaskForm onSubmit={onSubmit} />
+      <TaskForm onSubmit={onSubmit} onAddTaskToggle={onAddTaskToggle}/>
     </div>
   );
 };

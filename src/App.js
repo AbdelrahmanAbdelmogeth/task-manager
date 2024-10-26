@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom'; // Remove Route and Routes imports
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import AddTaskPage from './components/AddTaskPage';
@@ -21,7 +21,7 @@ function App() {
           <div className="App" style={{ flexGrow: 1 }}>
             <KanbanBoard />
             {showAddTask && (
-              <AddTaskPage onAdd={() => setShowAddTask(false)} />
+              <AddTaskPage onAddTaskToggle={handleAddTaskToggle} onAdd={() => setShowAddTask(false)} />
             )}
           </div>
         </div>

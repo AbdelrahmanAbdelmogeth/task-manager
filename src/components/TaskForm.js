@@ -1,9 +1,8 @@
-// TaskForm.js
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Schema for validation
@@ -16,17 +15,16 @@ const schema = yup.object().shape({
     .mixed()
     .notRequired()
     .test('fileSize', 'Image size should be less than 5MB', (value) => {
-      if (!value || value.length === 0) return true; // No file selected, pass the test
+      if (!value || value.length === 0) return true;
       return value[0].size <= 5242880;
     })
     .test('fileFormat', 'Unsupported format, upload JPEG or PNG', (value) => {
-      if (!value || value.length === 0) return true; // No file selected, pass the test
+      if (!value || value.length === 0) return true;
       return ['image/jpeg', 'image/png'].includes(value[0].type);
     }),
 });
 
-
-const TaskForm = ({ onSubmit }) => {
+const TaskForm = ({ onSubmit, onAddTaskToggle }) => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
@@ -41,7 +39,6 @@ const TaskForm = ({ onSubmit }) => {
           Authorization: 'Client-ID a53e9ebce65ee6a',
         },
       });
-      console.log('Upload successful:', response.data);
       return response.data.data.link;
     } catch (error) {
       console.error('Image upload failed:', error.response ? error.response.data : error.message);
@@ -54,13 +51,16 @@ const TaskForm = ({ onSubmit }) => {
     if (data.image && data.image.length > 0) {
       imageUrl = await uploadImage(data.image);
     }
-    onSubmit({ ...data, image: imageUrl || null }); // Only include the image URL if uploaded
+    onSubmit({ ...data, image: imageUrl || null });
   };
 
   return (
-    <div className="floating-form position-fixed bg-light shadow p-4 rounded" 
-         style={{ bottom: '20px', right: '20px', width: '300px', zIndex: 1000 }}>
-      <h5 className="mb-3">Add New Task</h5>
+    <div className="floating-form position-fixed bg-light shadow p-4 rounded"
+         style={{ bottom: '50%', right: '50%', width: '40%', zIndex: 1000, transform: 'translate(50%, 50%)'
+          }}>
+            {/* Close Icon */}
+     <button type="button" className="btn-close float-end" onClick={onAddTaskToggle} aria-label="Close"></button>
+     <h5 className="mb-3">Add New Task</h5>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div className="form-group mb-3">
           <label htmlFor="title" className="form-label">Title</label>
@@ -83,32 +83,34 @@ const TaskForm = ({ onSubmit }) => {
           {errors.description && <div className="invalid-feedback">{errors.description.message}</div>}
         </div>
         
-        <div className="form-group mb-3">
-          <label htmlFor="priority" className="form-label">Priority</label>
-          <select 
-            id="priority" 
-            {...register('priority')} 
-            className={`form-select ${errors.priority ? 'is-invalid' : ''}`} 
-          >
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-          </select>
-          {errors.priority && <div className="invalid-feedback">{errors.priority.message}</div>}
-        </div>
-        
-        <div className="form-group mb-3">
-          <label htmlFor="state" className="form-label">State</label>
-          <select 
-            id="state" 
-            {...register('state')} 
-            className={`form-select ${errors.state ? 'is-invalid' : ''}`} 
-          >
-            <option value="todo">To Do</option>
-            <option value="doing">Doing</option>
-            <option value="done">Done</option>
-          </select>
-          {errors.state && <div className="invalid-feedback">{errors.state.message}</div>}
+        <div className="row">
+          <div className="col-md-6 form-group mb-3">
+            <label htmlFor="priority" className="form-label">Priority</label>
+            <select 
+              id="priority" 
+              {...register('priority')} 
+              className={`form-select ${errors.priority ? 'is-invalid' : ''}`} 
+            >
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+            {errors.priority && <div className="invalid-feedback">{errors.priority.message}</div>}
+          </div>
+          
+          <div className="col-md-6 form-group mb-3">
+            <label htmlFor="state" className="form-label">State</label>
+            <select 
+              id="state" 
+              {...register('state')} 
+              className={`form-select ${errors.state ? 'is-invalid' : ''}`} 
+            >
+              <option value="todo">To Do</option>
+              <option value="doing">Doing</option>
+              <option value="done">Done</option>
+            </select>
+            {errors.state && <div className="invalid-feedback">{errors.state.message}</div>}
+          </div>
         </div>
 
         <div className="form-group mb-3">

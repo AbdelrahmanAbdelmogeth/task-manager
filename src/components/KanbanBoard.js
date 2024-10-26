@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'react-redux';
-import { changeTaskState } from '../features/tasks/taskSlice';
+import { changeTaskState, deleteTask } from '../features/tasks/taskSlice';
 
 const KanbanBoard = () => {
   const dispatch = useDispatch();
@@ -18,6 +18,10 @@ const KanbanBoard = () => {
     if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
     dispatch(changeTaskState({ id: draggableId, newState: destination.droppableId }));
+  };
+
+  const handleDeleteTask = (taskId) => {
+    dispatch(deleteTask(taskId));
   };
 
   return (
@@ -57,6 +61,12 @@ const KanbanBoard = () => {
                                 <h5 className="card-title">{task.title}</h5>
                                 <p className="card-text">{task.description}</p>
                                 <span className="badge badge-secondary">{task.priority}</span>
+                                <button
+                                  className="btn btn-danger btn-sm mt-2"
+                                  onClick={() => handleDeleteTask(task.id)}
+                                >
+                                  Delete
+                                </button>
                               </div>
                             </div>
                           )}
